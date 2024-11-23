@@ -8,6 +8,6 @@ for file in os.listdir(path):
 #        print(f"HEIC: {file}")
 #    else:
 #        print(f"JPEG: {file}")
-    file_path = file.rsplit('.',1)[1]
+    file_ext = file.rsplit('.',1)[1]
     print(file_path)
 
