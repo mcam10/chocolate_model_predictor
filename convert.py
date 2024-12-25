@@ -42,12 +42,16 @@ total_files = len(heic_files)
 
 tasks = []
 
-if not os.path.exists("/data/2/converted"):
-    os.mkdir("/data/2/converted")
+## Will need to refactor this
+if not os.path.exists(os.path.join(path, "converted")):
+    os.makedirs(os.path.join(path, "converted"), exist_ok=True)
+
+jpg_path = os.path.join(path, "converted")
+
 
 for file_name in heic_files:
     heic_path = os.path.join(path, file_name)
-    jpg_path = os.path.join("/data/2/converted", os.path.splitext(file_name)[0] + ".jpg")
+    jpg_file = os.path.join(jpg_path, "converted", os.path.splitext(file_name)[0] + ".jpg")
     
     # skip conversion if the JPG already exists
 
@@ -64,7 +68,7 @@ num_converted = 0
 
 with ThreadPoolExecutor(max_workers=4) as executor:
     future_to_file = {
-        executor.submit(convert_single_file, heic_path, jpg_path, output_quality=50): heic_path
+        executor.submit(convert_single_file, heic_path, jpg_file, output_quality=50): heic_path
         for heic_path, jpg_path in tasks
     }
 
