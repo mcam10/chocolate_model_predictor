@@ -13,6 +13,8 @@ image_transform = transforms.Compose([
 
 # Load the image
 input_image = Image.open(str('IMG_2782.JPG')) # add your image path
+
+print(input_image.info.get("exif"))
 plt.imshow(input_image)
 plt.show()
 

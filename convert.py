@@ -78,9 +78,18 @@ with ThreadPoolExecutor(max_workers=4) as executor:
 
 print(f"\nConversion completed successfully. {num_converted} files converted.")
 
-
 for file in heic_files:
     ## Removing existing files
     print(f"Removing Existing HEIC file {file}")
     os.remove(os.path.join(path, file))
+
+
+####
+print(f"\nCopying ConvertedFiles to the main class directory")
+shutil.copytree(jpg_dir, path, dirs_exist_ok=True)
+
+## Remove the Converted Files directory
+shutil.rmtree(jpg_dir)
+
+
 
