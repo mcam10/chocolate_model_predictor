@@ -7,7 +7,7 @@ import shutil
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
-path = "data/2/"
+path = "data/7/"
 
 def convert_single_file(heic_path, jpg_path, output_quality) -> tuple:
     """
@@ -82,8 +82,6 @@ for file in heic_files:
     ## Removing existing files
     print(f"Removing Existing HEIC file {file}")
     os.remove(os.path.join(path, file))
-
-
 ####
 print(f"\nCopying ConvertedFiles to the main class directory")
 shutil.copytree(jpg_dir, path, dirs_exist_ok=True)
