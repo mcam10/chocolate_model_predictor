@@ -3,6 +3,7 @@ import logging
 from PIL import Image, UnidentifiedImageError
 from pillow_heif import register_heif_opener
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import shutil
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
@@ -41,8 +42,6 @@ total_files = len(heic_files)
 jpg_dir = os.path.join(path, "ConvertedFiles")
 os.makedirs(jpg_dir, exist_ok=True)
 
-
-
 tasks = []
 for file_name in heic_files:
     heic_path = os.path.join(path, file_name)
@@ -54,8 +53,6 @@ for file_name in heic_files:
         continue
 
     tasks.append((heic_path, jpg_path))
-
-print(tasks)
 
     #Convert HEIC files to JPG in parallel using ThreadPoolExecutor
 num_converted = 0
@@ -82,4 +79,8 @@ with ThreadPoolExecutor(max_workers=4) as executor:
 print(f"\nConversion completed successfully. {num_converted} files converted.")
 
 
-    
+for file in heic_files:
+    ## Removing existing files
+    print(f"Removing Existing HEIC file {file}")
+    os.remove(os.path.join(path, file))
+
