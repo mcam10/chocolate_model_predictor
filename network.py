@@ -27,19 +27,10 @@ class Net(nn.Module):
         x = F.relu(self.fc2(x))
         x = self.fc3(x)
         return x
-     
 
 net = Net()
-## Lets plot the filters
 
-#fig, axes = plt.subplots(nrows=8, ncols=8, figsize=(8,8))
-
-#for i,ax in enumerate(axes.flat):
-#    ax.imshow(filters[:, :, :, i], cmap='gray')
-#    ax.axis('off')
-
-#plt.show
-
+## Loss function and optimizer for when we get there
 #criterion = nn.CrossEntropyLoss()
 #optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
@@ -50,8 +41,6 @@ chocolate_dataset_train.class_to_idx
 
 clss_vals = list(chocolate_dataset_train.class_to_idx.keys())
 idx_vals = list(chocolate_dataset_train.class_to_idx.values())
-
-df = pd.DataFrame()
 
 data = []
 counter = {}
@@ -69,9 +58,8 @@ cols, rows = 3,3
 
 for i in range(1, cols * rows + 1):
    sample_idx = torch.randint(len(dataset_tuple), size=(1,)).item()
-   img,label = data[sample_idx]
+   label,img = data[sample_idx]
    figure.add_subplot(rows, cols, i)
    plt.title("Labels")
    plt.axis("off")
-   plt.imshow(img.squeeze(), cmap="gray")
-
+#   plt.imshow(img.squeeze(), cmap="gray")
