@@ -7,6 +7,8 @@ import shutil
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
+
+## TO-DO needs to be a parameter
 path = "data/7/"
 
 def convert_single_file(heic_path, jpg_path, output_quality) -> tuple:

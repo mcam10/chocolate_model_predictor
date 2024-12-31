@@ -1,4 +1,5 @@
 import torch
+import torch.optim as optim
 from torch.utils.data import Dataset
 from torchvision import datasets
 import torch.nn as nn
@@ -10,57 +11,25 @@ import matplotlib.pyplot as plt
 
 class Net(nn.Module):
     def __init__(self):
-        super(Net, self).__init__()
-        # 1 input image channel, 6 output channels, 5x5 sqaure convs
-        self.conv1 = nn.Conv2d(1,6,5)
+        super().__init__()
+        self.conv1 = nn.Conv2d(3,6,5)
+        self.pool = nn.MaxPool2d(2,2)
         self.conv2 = nn.Conv2d(6,16,5)
-        # an affline operation y = mx+b
         self.fc1 = nn.Linear(16 * 5 * 5, 120)
         self.fc2 = nn.Linear(120,84)
         self.fc3 = nn.Linear(84,10)
 
     def forward(self, input):
-        # Convolution layer C1: 1 input image channel, 6 output channels,
-        # 5x5 square convolution, it uses RELU activation function, and
-        # outputs a Tensor with size (N, 6, 28, 28), where N is the size of the batch
-        c1 = F.relu(self.conv1(input))
-
-        s2 = F.max_pool2d(c1, (2,2))
-
-        c3 = F.relu(self.conv2(s3))
-
-        s4 = F.max_pool2d(c3,2)
-
-        s4 = torch.flatten(s4,2)
-
-        f5 = F.relu(self.fc1(s4))
-
-        f6 = F.relu(self.fc1(s5))
-
-        output = self.fc3(f6)
-        return output
+        x = self.pool(F.relu(self.conv1(x)))
+        x = self.pool(F.relu(self.conv2(x)))
+        x = torch.flatten(x,1) # flatten all dimensions
+        x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
+        x = self.fc3(x)
+        return x
+     
 
 net = Net()
-## printing network information
-print('Network......')
-print(net)
-params = list(net.parameters())
-print('Params......')
-print(params)
-#print(params[0].size())
-
-## Get the first convulutional layer
-conv_layer = net.conv1
-
-print('Conv1 layer......')
-print(conv_layer)
-
-## Get the weights of the layer
-filters = conv_layer.weight.data.cpu().numpy()
-
-print('Filters......')
-print(filters)
-
 ## Lets plot the filters
 
 #fig, axes = plt.subplots(nrows=8, ncols=8, figsize=(8,8))
@@ -71,3 +40,52 @@ print(filters)
 
 #plt.show
 
+#criterion = nn.CrossEntropyLoss()
+#optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+
+chocolate_dataset_train = datasets.ImageFolder('data')
+
+dataset_tuple = chocolate_dataset_train.imgs
+chocolate_dataset_train.class_to_idx
+
+clss_vals = list(chocolate_dataset_train.class_to_idx.keys())
+idx_vals = list(chocolate_dataset_train.class_to_idx.values())
+
+df = pd.DataFrame()
+
+data = []
+counter = {}
+
+for img_path in dataset_tuple:
+    _,idx = img_path
+    position = idx_vals.index(idx)
+    counter[clss_vals[position]] = counter.get(clss_vals[position], 0) + 1
+    data.append([clss_vals[position], _])
+
+df = pd.DataFrame(data, columns = ['Class', 'File Path'])
+#print(df)
+#print(counter)
+
+#print(df['File Path'])
+#print(df['Class'])
+## Build some visualizations
+## This is a bar chart code
+# plt.bar(counter.keys(), counter.values())
+# plt.xlabel('Classes')
+# plt.ylabel('Counts')
+# plt.title('Bar Chart of Counts of each sample')
+#plt.show()
+
+figure = plt.figure(figsize=(8,8))
+cols, rows = 3,3
+
+for i in range(1, cols * rows + 1):
+   sample_idx = torch.randint(len(dataset_tuple), size=(1,)).item()
+   img,label = data[sample_idx]
+   figure.add_subplot(rows, cols, i)
+   plt.title("Labels")
+   plt.axis("off")
+   plt.imshow(img.squeeze(), cmap="gray")
+
+#print(len(dataset_tuple))
+#print(data)

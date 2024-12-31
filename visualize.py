@@ -6,7 +6,6 @@ import pandas as pd
 import os
 
 import matplotlib.pyplot as plt
-from collections import Counter
 
 chocolate_dataset_train = datasets.ImageFolder('data')
 
