@@ -63,18 +63,6 @@ for img_path in dataset_tuple:
     data.append([clss_vals[position], _])
 
 df = pd.DataFrame(data, columns = ['Class', 'File Path'])
-#print(df)
-#print(counter)
-
-#print(df['File Path'])
-#print(df['Class'])
-## Build some visualizations
-## This is a bar chart code
-# plt.bar(counter.keys(), counter.values())
-# plt.xlabel('Classes')
-# plt.ylabel('Counts')
-# plt.title('Bar Chart of Counts of each sample')
-#plt.show()
 
 figure = plt.figure(figsize=(8,8))
 cols, rows = 3,3
@@ -87,5 +75,3 @@ for i in range(1, cols * rows + 1):
    plt.axis("off")
    plt.imshow(img.squeeze(), cmap="gray")
 
-#print(len(dataset_tuple))
-#print(data)
