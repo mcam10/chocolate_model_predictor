@@ -7,8 +7,6 @@ import shutil
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
-
-#path = "Outdoors Nature shots"
 path = os.path.join(os.getcwd(), 'Outdoors Nature shots')
 
 def convert_single_file(heic_path, jpg_path, output_quality) -> tuple:
@@ -34,20 +32,34 @@ def convert_single_file(heic_path, jpg_path, output_quality) -> tuple:
         logging.error("Error converting '%s': %s", heic_path, e)
         return heic_path, False  # Failed conversion
 
-register_heif_opener()
-if not os.path.isdir(path):
-   logging.error("Directory '%s' does not exist.", path)
 
-heic_files = [file for file in os.listdir(path) if file.lower().endswith("heic")]
-total_files = len(heic_files)
+def convert_heic_to_jpg(heic_dir, output_quality=50, max_workers=4) -> None:
+    """
+    Converts HEIC images in a directory to JPG format using parallel processing.
 
-jpg_dir = os.path.join(path, "ConvertedFiles")
-os.makedirs(jpg_dir, exist_ok=True)
+    #### Args:
+        - heic_dir (str): Path to the directory containing HEIC files.
+        - output_quality (int, optional): Quality of the output JPG images (1-100). Defaults to 50.
+        - max_workers (int, optional): Number of parallel threads. Defaults to 4.
+    """
 
-tasks = []
-for file_name in heic_files:
-    heic_path = os.path.join(path, file_name)
-    jpg_path = os.path.join(jpg_dir, os.path.splitext(file_name)[0] + ".jpg")
+    register_heif_opener()
+    if not os.path.isdir(path):
+        logging.error("Directory '%s' does not exist.", path)
+
+    heic_files = [file for file in os.listdir(path) if file.lower().endswith("heic")]
+    total_files = len(heic_files)
+
+    ## store newly converted jpeg files
+    jpg_dir = os.path.join(path, "ConvertedFiles")
+    os.makedirs(jpg_dir, exist_ok=True)
+
+
+
+    tasks = []
+    for file_name in heic_files:
+        heic_path = os.path.join(path, file_name)
+        jpg_path = os.path.join(jpg_dir, os.path.splitext(file_name)[0] + ".jpg")
     
     #skip conversion if the JPG already exists
     if os.path.exists(jpg_path):
@@ -57,28 +69,28 @@ for file_name in heic_files:
     tasks.append((heic_path, jpg_path))
 
     #Convert HEIC files to JPG in parallel using ThreadPoolExecutor
-num_converted = 0
+    num_converted = 0
 
-with ThreadPoolExecutor(max_workers=4) as executor:
-    future_to_file = {
-        executor.submit(convert_single_file, heic_path, jpg_path, output_quality=50): heic_path
-        for heic_path, jpg_path in tasks
-    }
+    with ThreadPoolExecutor(max_workers=4) as executor:
+         future_to_file = {
+             executor.submit(convert_single_file, heic_path, jpg_path, output_quality=50): heic_path
+             for heic_path, jpg_path in tasks
+         }
 
-    for future in as_completed(future_to_file):
-        heic_file = future_to_file[future]
-        try:
-            _, success = future.result()
-            if success:
-                num_converted += 1
+         for future in as_completed(future_to_file):
+             heic_file = future_to_file[future]
+            try:
+                _, success = future.result()
+                if success:
+                    num_converted += 1
 
-            # Display progress
-            progress = int((num_converted / total_files) * 100)
-            print(f"Conversion progress: {progress}%", end="\r", flush=True)
-        except Exception as e:
-            logging.error("Error occured during conversion of '%s' %s", heic_file, e)
+                # Display progress
+                progress = int((num_converted / total_files) * 100)
+                print(f"Conversion progress: {progress}%", end="\r", flush=True)
+            except Exception as e:
+                logging.error("Error occured during conversion of '%s' %s", heic_file, e)
 
-print(f"\nConversion completed successfully. {num_converted} files converted.")
+    print(f"\nConversion completed successfully. {num_converted} files converted.")
 
 for file in heic_files:
     ## Removing existing files
