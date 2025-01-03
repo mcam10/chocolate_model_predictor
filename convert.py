@@ -1,5 +1,6 @@
 import os,sys
 import logging
+import argparse
 from PIL import Image, UnidentifiedImageError
 from pillow_heif import register_heif_opener
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -54,17 +55,15 @@ def convert_heic_to_jpg(heic_dir, output_quality=50, max_workers=4) -> None:
     jpg_dir = os.path.join(path, "ConvertedFiles")
     os.makedirs(jpg_dir, exist_ok=True)
 
-
-
     tasks = []
     for file_name in heic_files:
         heic_path = os.path.join(path, file_name)
         jpg_path = os.path.join(jpg_dir, os.path.splitext(file_name)[0] + ".jpg")
     
-    #skip conversion if the JPG already exists
-    if os.path.exists(jpg_path):
-        logging.info("Skipping '%s' as the JPG already exists.", file_name)
-        continue
+        #skip conversion if the JPG already exists
+        if os.path.exists(jpg_path):
+            logging.info("Skipping '%s' as the JPG already exists.", file_name)
+            continue
 
     tasks.append((heic_path, jpg_path))
 
@@ -79,7 +78,7 @@ def convert_heic_to_jpg(heic_dir, output_quality=50, max_workers=4) -> None:
 
          for future in as_completed(future_to_file):
              heic_file = future_to_file[future]
-            try:
+             try:
                 _, success = future.result()
                 if success:
                     num_converted += 1
@@ -87,11 +86,36 @@ def convert_heic_to_jpg(heic_dir, output_quality=50, max_workers=4) -> None:
                 # Display progress
                 progress = int((num_converted / total_files) * 100)
                 print(f"Conversion progress: {progress}%", end="\r", flush=True)
-            except Exception as e:
-                logging.error("Error occured during conversion of '%s' %s", heic_file, e)
+             except Exception as e:
+                 logging.error("Error occured during conversion of '%s' %s", heic_file, e)
 
     print(f"\nConversion completed successfully. {num_converted} files converted.")
 
+
+# Parse command line arguments
+parser = argparse.ArgumentParser(description="Converts HEIC images to JPG format.",
+                                 usage="%(prog)s [options] <heic_directory>",
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+
+parser.add_argument("heic_dir", type=str, help="Path to the directory containing HEIC images.")
+parser.add_argument("-q", "--quality", type=int, default=50, help="Output JPG image quality (1-100). Default is 50.")
+parser.add_argument("-w", "--workers", type=int, default=4, help="Number of parallel workers for conversion.")
+
+parser.epilog = """
+Example usage:
+  %(prog)s /path/to/your/heic/images -q 90 -w 8
+"""
+# If no arguments provided, print help message
+try:
+    args = parser.parse_args()
+except SystemExit:
+    print(parser.format_help())
+    exit()
+
+# Convert HEIC to JPG with parallel processing - test calling this function
+#convert_heic_to_jpg(args.heic_dir, args.quality, args.workers)
+
+# Cleanup -- need a safe way to implement
 for file in heic_files:
     ## Removing existing files
     print(f"Removing Existing HEIC file {file}")
