@@ -8,8 +8,8 @@ import shutil
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
 
-## TO-DO needs to be a parameter
-path = "data/7/"
+#path = "Outdoors Nature shots"
+path = os.path.join(os.getcwd(), 'Outdoors Nature shots')
 
 def convert_single_file(heic_path, jpg_path, output_quality) -> tuple:
     """
@@ -34,7 +34,7 @@ def convert_single_file(heic_path, jpg_path, output_quality) -> tuple:
         logging.error("Error converting '%s': %s", heic_path, e)
         return heic_path, False  # Failed conversion
 
-#register_heif_opener()
+register_heif_opener()
 if not os.path.isdir(path):
    logging.error("Directory '%s' does not exist.", path)
 
