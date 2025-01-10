@@ -75,11 +75,3 @@ images,labels = next(dataiter)
 
 # show images 
 imshow(torchvision.utils.make_grid(images))
-
-# for i in range(1, cols * rows + 1):
-#    sample_idx = torch.randint(len(dataset_tuple), size=(1,)).item()
-#    label,img = data[sample_idx]
-#    figure.add_subplot(rows, cols, i)
-#    plt.title("Labels")
-#    plt.axis("off")
-#    plt.imshow(img.squeeze(), cmap="gray")
