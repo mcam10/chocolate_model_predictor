@@ -4,10 +4,12 @@ from torch.utils.data import Dataset
 from torchvision import datasets
 import torch.nn as nn
 import torch.nn.functional as F
+import torchvision
 import torchvision.transforms as transforms
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
+import numpy as np
 
 class Net(nn.Module):
     def __init__(self):
@@ -34,7 +36,13 @@ net = Net()
 #criterion = nn.CrossEntropyLoss()
 #optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
-chocolate_dataset_train = datasets.ImageFolder('data')
+transform = transforms.Compose(
+    [transforms.ToTensor(),
+     transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
+
+chocolate_dataset_train = datasets.ImageFolder('data', transform=transform)
+chocolate_dataset_loader = torch.utils.data.DataLoader( chocolate_dataset_train, batch_size=4, 
+                                                       shuffle=True)
 
 dataset_tuple = chocolate_dataset_train.imgs
 chocolate_dataset_train.class_to_idx
@@ -56,10 +64,22 @@ df = pd.DataFrame(data, columns = ['Class', 'File Path'])
 figure = plt.figure(figsize=(8,8))
 cols, rows = 3,3
 
-for i in range(1, cols * rows + 1):
-   sample_idx = torch.randint(len(dataset_tuple), size=(1,)).item()
-   label,img = data[sample_idx]
-   figure.add_subplot(rows, cols, i)
-   plt.title("Labels")
-   plt.axis("off")
-#   plt.imshow(img.squeeze(), cmap="gray")
+def imshow(img):
+    img = img / 2 + 0.5
+    npimg = img.numpy()
+    plt.imshow(np.transpose(npimg, (1,2,0)))
+    plt.show()
+
+dataiter = iter(chocolate_dataset_loader)
+images,labels = next(dataiter)
+
+# show images 
+imshow(torchvision.utils.make_grid(images))
+
+# for i in range(1, cols * rows + 1):
+#    sample_idx = torch.randint(len(dataset_tuple), size=(1,)).item()
+#    label,img = data[sample_idx]
+#    figure.add_subplot(rows, cols, i)
+#    plt.title("Labels")
+#    plt.axis("off")
+#    plt.imshow(img.squeeze(), cmap="gray")

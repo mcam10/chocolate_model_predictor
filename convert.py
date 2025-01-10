@@ -8,7 +8,7 @@ import shutil
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
-path = os.path.join(os.getcwd(), 'Outdoors Nature shots')
+path = os.path.join(os.getcwd(), 'data/7')
 
 def convert_single_file(heic_path, jpg_path, output_quality) -> tuple:
     """
@@ -93,39 +93,42 @@ def convert_heic_to_jpg(heic_dir, output_quality=50, max_workers=4) -> None:
 
 
 # Parse command line arguments
-parser = argparse.ArgumentParser(description="Converts HEIC images to JPG format.",
-                                 usage="%(prog)s [options] <heic_directory>",
-                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+# parser = argparse.ArgumentParser(description="Converts HEIC images to JPG format.",
+#                                  usage="%(prog)s [options] <heic_directory>",
+#                                  formatter_class=argparse.RawDescriptionHelpFormatter)
 
-parser.add_argument("heic_dir", type=str, help="Path to the directory containing HEIC images.")
-parser.add_argument("-q", "--quality", type=int, default=50, help="Output JPG image quality (1-100). Default is 50.")
-parser.add_argument("-w", "--workers", type=int, default=4, help="Number of parallel workers for conversion.")
+# parser.add_argument("heic_dir", type=str, help="Path to the directory containing HEIC images.")
+# parser.add_argument("-q", "--quality", type=int, default=50, help="Output JPG image quality (1-100). Default is 50.")
+# parser.add_argument("-w", "--workers", type=int, default=4, help="Number of parallel workers for conversion.")
 
-parser.epilog = """
-Example usage:
-  %(prog)s /path/to/your/heic/images -q 90 -w 8
-"""
-# If no arguments provided, print help message
-try:
-    args = parser.parse_args()
-except SystemExit:
-    print(parser.format_help())
-    exit()
+# parser.epilog = """
+# Example usage:
+#   %(prog)s /path/to/your/heic/images -q 90 -w 8
+# """
+# # If no arguments provided, print help message
+# try:
+#     args = parser.parse_args()
+# except SystemExit:
+#     print(parser.format_help())
+#     exit()
 
 # Convert HEIC to JPG with parallel processing - test calling this function
-#convert_heic_to_jpg(args.heic_dir, args.quality, args.workers)
+#convert_heic_to_jpg(path, 50, 4)
 
 # Cleanup -- need a safe way to implement
+heic_files = [file for file in os.listdir(path) if file.lower().endswith("heic")]
+jpg_dir = os.path.join(path, "ConvertedFiles")
+
 for file in heic_files:
     ## Removing existing files
     print(f"Removing Existing HEIC file {file}")
     os.remove(os.path.join(path, file))
 ####
-print(f"\nCopying ConvertedFiles to the main class directory")
-shutil.copytree(jpg_dir, path, dirs_exist_ok=True)
+# print(f"\nCopying ConvertedFiles to the main class directory")
+# shutil.copytree(jpg_dir, path, dirs_exist_ok=True)
 
 ## Remove the Converted Files directory
-shutil.rmtree(jpg_dir)
+#shutil.rmtree(jpg_dir)
 
 
 
