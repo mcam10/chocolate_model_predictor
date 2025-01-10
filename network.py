@@ -21,7 +21,7 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(120,84)
         self.fc3 = nn.Linear(84,10)
 
-    def forward(self, input):
+    def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
         x = self.pool(F.relu(self.conv2(x)))
         x = torch.flatten(x,1) # flatten all dimensions
@@ -32,16 +32,14 @@ class Net(nn.Module):
 
 net = Net()
 
-## Loss function and optimizer for when we get there
-#criterion = nn.CrossEntropyLoss()
-#optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
-
+batch_size = 4
 transform = transforms.Compose(
     [transforms.ToTensor(),
+     transforms.Resize((32,32)),
      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
 chocolate_dataset_train = datasets.ImageFolder('data', transform=transform)
-chocolate_dataset_loader = torch.utils.data.DataLoader( chocolate_dataset_train, batch_size=4, 
+chocolate_dataset_loader = torch.utils.data.DataLoader( chocolate_dataset_train, batch_size=batch_size, 
                                                        shuffle=True)
 
 dataset_tuple = chocolate_dataset_train.imgs
@@ -59,10 +57,8 @@ for img_path in dataset_tuple:
     counter[clss_vals[position]] = counter.get(clss_vals[position], 0) + 1
     data.append([clss_vals[position], _])
 
+## pandas dataframe of dataset class, file_path
 df = pd.DataFrame(data, columns = ['Class', 'File Path'])
-
-figure = plt.figure(figsize=(8,8))
-cols, rows = 3,3
 
 def imshow(img):
     img = img / 2 + 0.5
@@ -73,5 +69,34 @@ def imshow(img):
 dataiter = iter(chocolate_dataset_loader)
 images,labels = next(dataiter)
 
-# show images 
-imshow(torchvision.utils.make_grid(images))
+## print labels first
+# print(' '.join(f'{clss_vals[labels[j]]:5s}' for j in range(batch_size)))
+# imshow(torchvision.utils.make_grid(images))
+
+## Defining a loss function and optimizer
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+
+## Train the network
+for epoch in range(2):
+
+    running_loss = 0.0
+    for i, data in enumerate(chocolate_dataset_loader, 0):
+        # get the inputs; data is a list of [inputs, labels]
+        inputs, labels = data
+        # zero the parameter gradients
+        optimizer.zero_grad()
+
+        #forward + backward + optimizer
+        outputs = net(inputs)
+        loss = criterion(outputs, labels)
+        loss.backward()
+        optimizer.step()
+
+        ## print statistics
+        running_loss += loss.item()
+        if i % 10 == 9:
+            print('[%d, %5d] loss: %.3f' %
+                 ( epoch + 1, i + 1, running_loss/ 10  ))
+            running_loss = 0.0
+print('Finished Training')
