@@ -1,6 +1,8 @@
-import torch
-from torchvision import datasets, models, transforms
+from torchvision import datasets,transforms, models
+from torchvision.models import resnet50, ResNet50_Weights
 from torch.utils.data import Dataset, DataLoader
+import torch.nn as nn
+import torch.nn.functional as F
 
 class PoopDataset(Dataset):
     def __init__(self, data_dir, transform=None):
@@ -35,8 +37,27 @@ image, label = dataset[67]
 ## Pull a random 32 images everytime we load from dataset. 
 dataloader = DataLoader(dataset=dataset, batch_size=32, shuffle=True)
 
-for images, labels in dataloader:
-    break
-
+#for images, labels in dataloader:
+#    break
 #print(image.shape) ## batch size, RGB channel x SIZE x SIZE
-print(images.shape)
+#print(images.shape)
+
+class PoopClassifier(nn.Module):
+    def __init__(self, num_classes=7):
+        ## where we all define parts of the model
+        self.base_model = models.resnet50(pretrained=True)
+        self.features = nn.Sequential(*list(self.base_model.children())[:-1])
+
+        rnet_out_size = 2048 ## features from resnet
+        self.classifier = nn.Linear(rnet_out_size, num_classes)
+
+    def forward(self, x):
+        # connect these parts and return the output
+        pass
+
+## Testing
+pretrained_model_efficientnet = models.efficientnet_b0(pretrained=True)
+print(f"EffecientNet: {pretrained_model_efficientnet}")
+
+pretrained_model_resnet = models.resnet50(pretrained=True)
+print(f"ResNet: {pretrained_model_resnet}")
