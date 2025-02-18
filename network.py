@@ -35,7 +35,7 @@ net = Net()
 batch_size = 4
 transform = transforms.Compose(
     [transforms.ToTensor(),
-     transforms.Resize((32,32)),
+     transforms.Resize((256,256)),
      transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
 chocolate_dataset_train = datasets.ImageFolder('data', transform=transform)
@@ -70,33 +70,33 @@ dataiter = iter(chocolate_dataset_loader)
 images,labels = next(dataiter)
 
 ## print labels first
-# print(' '.join(f'{clss_vals[labels[j]]:5s}' for j in range(batch_size)))
-# imshow(torchvision.utils.make_grid(images))
+print(' '.join(f'{clss_vals[labels[j]]:5s}' for j in range(batch_size)))
+imshow(torchvision.utils.make_grid(images))
 
 ## Defining a loss function and optimizer
 criterion = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
 
 ## Train the network
-for epoch in range(2):
+# for epoch in range(2):
 
-    running_loss = 0.0
-    for i, data in enumerate(chocolate_dataset_loader, 0):
-        # get the inputs; data is a list of [inputs, labels]
-        inputs, labels = data
-        # zero the parameter gradients
-        optimizer.zero_grad()
+#     running_loss = 0.0
+#     for i, data in enumerate(chocolate_dataset_loader, 0):
+#         # get the inputs; data is a list of [inputs, labels]
+#         inputs, labels = data
+#         # zero the parameter gradients
+#         optimizer.zero_grad()
 
-        #forward + backward + optimizer
-        outputs = net(inputs)
-        loss = criterion(outputs, labels)
-        loss.backward()
-        optimizer.step()
+#         #forward + backward + optimizer
+#         outputs = net(inputs)
+#         loss = criterion(outputs, labels)
+#         loss.backward()
+#         optimizer.step()
 
-        ## print statistics
-        running_loss += loss.item()
-        if i % 10 == 9:
-            print('[%d, %5d] loss: %.3f' %
-                 ( epoch + 1, i + 1, running_loss/ 10  ))
-            running_loss = 0.0
-print('Finished Training')
+#         ## print statistics
+#         running_loss += loss.item()
+#         if i % 10 == 9:
+#             print('[%d, %5d] loss: %.3f' %
+#                  ( epoch + 1, i + 1, running_loss/ 10  ))
+#             running_loss = 0.0
+# print('Finished Training')
