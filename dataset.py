@@ -62,14 +62,7 @@ class PoopClassifier(nn.Module):
 #        output = self.resnet.fc(x)
 #        return output
 
-## Testing
-pretrained_model_efficientnet = models.efficientnet_b0(pretrained=True)
-#print(f"EffecientNet: {pretrained_model_efficientnet}")
-
 pretrained_model_resnet = models.resnet50(pretrained=True)
-params = nn.Sequential(*list(pretrained_model_resnet.children()))
-
 model = PoopClassifier(num_classes=7)
-x = torch.randn(1,3,224,224)
 #model(images)
 #model(x).shape
