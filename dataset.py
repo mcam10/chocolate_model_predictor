@@ -1,8 +1,7 @@
-from torchvision import datasets,transforms, models
+from torchvision import datasets, transforms
 from torchvision.models import resnet50, ResNet50_Weights
 from torch.utils.data import Dataset, DataLoader
 import torch.nn as nn
-import torch.nn.functional as F
 import torch
 
 class PoopDataset(Dataset):
@@ -45,10 +44,12 @@ for images, labels in dataloader:
 
 class PoopClassifier(nn.Module):
     def __init__(self, num_classes=7):
-        super(PoopClassifier, self).__init__()
-        ## where we all define parts of the model
-        self.base_model = models.resnet50(pretrained=True)
+        super().__init__()
+        # Initialize with modern weights
+        weights = ResNet50_Weights.DEFAULT
+        self.base_model = resnet50(weights=weights)
 
+        # Freeze the feature extractor
         for param in self.base_model.parameters():
             param.requires_grad = False
         
@@ -57,12 +58,4 @@ class PoopClassifier(nn.Module):
         self.base_model.fc = nn.Linear(num_features, num_classes)
 
     def forward(self, x):
-        # connect these parts and return the output
         return self.base_model(x)
-#        output = self.resnet.fc(x)
-#        return output
-
-pretrained_model_resnet = models.resnet50(pretrained=True)
-model = PoopClassifier(num_classes=7)
-#model(images)
-#model(x).shape
