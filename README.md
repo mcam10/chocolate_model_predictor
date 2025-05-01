@@ -14,13 +14,13 @@ This tool serves pet owners in monitoring animal digestive health through automa
 
 ### The Purina Fecal Score Chart (1-7)
 
-Score 1: Very hard and dry
-Score 2: Firm but not hard
-Score 3: Log-shaped, moist
-Score 4: Very moist but has shape
-Score 5: Very moist and barely has shape
-Score 6: Has texture but no shape
-Score 7: Watery, no texture
+- Score 1: Very hard and dry
+- Score 2: Firm but not hard
+- Score 3: Log-shaped, moist
+- Score 4: Very moist but has shape
+- Score 5: Very moist and barely has shape
+- Score 6: Has texture but no shape
+- Score 7: Watery, no texture
 
 ## Model Performance
 - Successfully differentiates between 7 different stool consistency classes
